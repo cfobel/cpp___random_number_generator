@@ -1,0 +1,50 @@
+#example.bat $Revision: 1.00 $Sat Apr  4 13:18:55 BST 2009
+CUDA Park-Miller Gsamples/s: 3.534754 Tesla Processing time: 118.658997 (ms) seed=0 cycles     100 grid_size    8192 block_size     512 data_size    4194304 $Revision: 1.14 $
+#example.bat $Revision: 1.00 $Sat Apr  4 13:18:56 BST 2009
+
+Program to test Park-Miller Random number generator
+Version $Revision: 1.14 $
+seed=0 cycles=100 grid_size=8192 block_size=512 data_size=4194304
+Genenerating 10,000 random numbers on CPU with an initial seed of 1
+10,000th random number is 1043618065 it should be 1043618065
+Allocating GPU memory...
+Allocating CPU memory...
+Testing Park-Miller...
+CUDA Park-Miller Gsamples/s: 3.534516 Tesla Processing time: 118.667000 (ms) seed=0 cycles     100 grid_size    8192 block_size     512 data_size    4194304 $Revision: 1.14 $
+Reading GPU results...
+Comparing to the CPU results...
+     0 1398101  0          0
+     0 1398101  1  892053144
+     0 1398101  2 1784106288
+     0 1398101  3  528675785
+     0 1398101  4 1420728929
+     0 1398101  5  165298426
+     0 1398101 1398097 2074151601
+     0 1398101 1398098  818721098
+     0 1398101 1398099 1710774242
+     0 1398101 1398100  455343739
+     1 1398101  0 1347396883
+     1 1398101  1   91966380
+     1 1398101  2  984019524
+     1 1398101  3 1876072668
+     1 1398101  4  620642165
+     1 1398101  5 1512695309
+     1 1398101 1398097 1274064837
+     1 1398101 1398098   18634334
+     1 1398101 1398099  910687478
+     1 1398101 1398100 1802740622
+     2 1398101  0  547310119
+     2 1398101  1 1439363263
+     2 1398101  2  183932760
+     2 1398101  3 1075985904
+     2 1398101  4 1968039048
+     2 1398101  5  712608545
+     2 1398101 1398097  473978073
+     2 1398101 1398098 1366031217
+     2 1398101 1398099  110600714
+     2 1398101 1398100 1002653858
+     3 1398101  0 1894707002
+Error 0 0 L1 norm: 0.000000E+00
+TEST PASSED
+Shutting down...
+#example.bat $Revision: 1.00 $Sat Apr  4 13:18:56 BST 2009
