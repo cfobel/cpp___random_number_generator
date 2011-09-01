@@ -27,3 +27,5 @@ cutil = [
 program = env.Program('park-miller', Glob('*.cpp') 
                             + cutil
                             + kernels)
+
+ptx = env.Ptx('park-miller_device.cu')
