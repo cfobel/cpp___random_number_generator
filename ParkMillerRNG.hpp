@@ -54,12 +54,13 @@ void parkmillerGPU(int *d_Output, unsigned int seed, int cycles,
        unsigned int grid_size, unsigned int block_size, unsigned int N);
 
 
-class CUDAParkMillerRNG : public ParkMillerRNG {
+class CUDAParkMillerRNG {
 protected:
     int *d_Output;
     int data_size;
+    unsigned int seed;
 public:
-    CUDAParkMillerRNG(unsigned int seed=0) : ParkMillerRNG(seed), data_size(0), d_Output(NULL) {}
+    CUDAParkMillerRNG(unsigned int seed=0) : seed(seed), data_size(0), d_Output(NULL) {}
 
     vector<int> get_values(int cycles, unsigned int grid_size,
                             unsigned int block_size, unsigned int N){

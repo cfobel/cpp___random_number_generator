@@ -52,7 +52,7 @@ using namespace std;
 
 
 
-#include "park-miller_common.h"
+#include "ParkMillerRNG.hpp"
 
 
 

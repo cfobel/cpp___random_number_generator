@@ -5,7 +5,7 @@
 
 
 #define DOUBLE_PRECISION
-#include "park-miller_common.h"
+#include "ParkMillerRNG.hpp"
 
 //Fast integer multiplication
 #define MUL(a, b) __umul24(a, b)
