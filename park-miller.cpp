@@ -71,15 +71,15 @@ extern "C" void parkmiller_gpu(int *d_Output, unsigned int seed, int cycles,
 
 
 int main(int argc, char **argv){
-        int u, seed;
+    int u, seed;
 	int cycles = 1000;
 	unsigned int grid_size = 128;
 	unsigned int block_size =  128*3 ;//QRNG_DIMENSIONS;
 	unsigned int N=1048576*3; //QRNG_DIMENSIONS;
-        seed = 1;
+    seed = 1;
 
 	if(argc<=5) printf("\nProgram to test Park-Miller Random number generator\n");
-        if(argc<=5) printf("Version $Revision: 1.14 $\n");
+    if(argc<=5) printf("Version $Revision: 1.14 $\n");
 	if(argc>1) cycles    = atoi(argv[1]);
 	if(argc>2) grid_size = atoi(argv[2]);
 	if(argc>3) block_size= atoi(argv[3]);
@@ -88,39 +88,19 @@ int main(int argc, char **argv){
 	if(argc<=5) printf("seed=0 cycles=%d grid_size=%d block_size=%d data_size=%d\n",cycles,grid_size,block_size,N);
 
 	if(argc<=5) printf("Genenerating 10,000 random numbers on CPU with an initial seed of 1\n");
-//	rndomize(1);
 	for (int i=1; i<=10000; i++) u = seed = parkmillerValue(seed, 0);
 
 	if(argc<=5 || u != 1043618065 ) printf("10,000th random number is %d it should be 1043618065\n",u);
 
 	if ( u != 1043618065 ) return 2;
 
-  /*
-    unsigned int useDoublePrecision;
+    int *h_OutputGPU;
 
-    char *precisionChoice;
-    cutGetCmdLineArgumentstr(argc, (const char **)argv, "type", &precisionChoice);
-    if(precisionChoice == NULL)
-        useDoublePrecision = 0;
-    else{
-        if(!strcasecmp(precisionChoice, "double"))
-            useDoublePrecision = 1;
-        else
-            useDoublePrecision = 0;
-    }
-    printf("useDoublePrecision=%d\n",useDoublePrecision);
-  */
-    int
-        *h_OutputGPU;
+    int *d_Output;
 
-    int
-        *d_Output;
+    int pos;
 
-    int
-        pos;
-
-    double
-        L1norm, gpuTime;
+    double L1norm, gpuTime;
     int delta, sumDelta, sumRef, ref;
     int nerror=0;
 
@@ -137,7 +117,7 @@ int main(int argc, char **argv){
         cutilDeviceInit(argc, argv);
     else
     */
-        cudaSetDevice( cutGetMaxGflopsDeviceId() );
+    cudaSetDevice( cutGetMaxGflopsDeviceId() );
 
     cutilCheckError(cutCreateTimer(&hTimer));
 
@@ -153,21 +133,22 @@ int main(int argc, char **argv){
     }
 
     if(argc<=5) printf("Allocating GPU memory...\n");
-        cutilSafeCall( cudaMalloc((void **)&d_Output, N * sizeof(int)) );
+    cutilSafeCall( cudaMalloc((void **)&d_Output, N * sizeof(int)) );
 
     if(argc<=5) printf("Allocating CPU memory...\n");
-        h_OutputGPU = (int *)malloc(N * sizeof(int));
+    h_OutputGPU = (int *)malloc(N * sizeof(int));
 
     if(argc<=5) printf("Testing Park-Miller...\n");
-        cutilSafeCall( cudaMemset(d_Output, 0, N * sizeof(int)) );
-        cutilSafeCall( cudaThreadSynchronize() );
-        cutilCheckError( cutResetTimer(hTimer) );
-        cutilCheckError( cutStartTimer(hTimer) );
+
+    cutilSafeCall( cudaMemset(d_Output, 0, N * sizeof(int)) );
+    cutilSafeCall( cudaThreadSynchronize() );
+    cutilCheckError( cutResetTimer(hTimer) );
+    cutilCheckError( cutStartTimer(hTimer) );
 	parkmiller_gpu(d_Output, 0, cycles, grid_size, block_size, N);
 
-        cutilSafeCall( cudaThreadSynchronize() );
-        cutilCheckError(cutStopTimer(hTimer));
-        gpuTime = cutGetTimerValue(hTimer);
+    cutilSafeCall( cudaThreadSynchronize() );
+    cutilCheckError(cutStopTimer(hTimer));
+    gpuTime = cutGetTimerValue(hTimer);
 
     printf("CUDA Park-Miller ");
     printf("Gsamples/s: %f ", (double)N * 1E-9 * (double)cycles/ (gpuTime * 1E-3));
@@ -176,32 +157,36 @@ int main(int argc, char **argv){
     printf("$Revision: 1.14 $\n");
 
     if(argc<=5) printf("Reading GPU results...\n");
-        cutilSafeCall( cudaMemcpy(h_OutputGPU, d_Output, N * sizeof(int), cudaMemcpyDeviceToHost) );
+    cutilSafeCall( cudaMemcpy(h_OutputGPU, d_Output, N * sizeof(int), cudaMemcpyDeviceToHost) );
 
     if(argc<=5) printf("Comparing to the CPU results...\n");
-        sumDelta = 0;
-        sumRef = 0;
-            for(pos = 0; pos < N; pos++){
-	        const unsigned int p3 = pos % (N/3);
-                ref       = parkmillerValue(pos, 0);
-		if(p3<=5 || p3>(N/3)-5) {
-		  for (int i=2; i<=cycles; i++) {ref = parkmillerValue(ref,0);}
-                delta     = h_OutputGPU[pos] - ref;
-		if(delta!=0) {nerror++;
-		  if(nerror<=10) printf("%6d %7d %2d %10d it should be %10d (%d)\n",pos/(N/3),N/3,p3, h_OutputGPU[pos],ref,delta);
-		} else {{
-		if(argc<=5) printf("%6d %7d %2d %10d\n",pos/(N/3),N/3,p3, h_OutputGPU[pos]); }}
-                sumDelta += abs(delta);
-                sumRef   += abs(ref);
-	    }
+    sumDelta = 0;
+    sumRef = 0;
+    for(pos = 0; pos < N; pos++){
+        const unsigned int p3 = pos % (N/3);
+        ref = parkmillerValue(pos, 0);
+        if(p3 <= 5 || p3 > (N / 3) - 5) {
+            for (int i = 2; i <= cycles; i++) {
+                ref = parkmillerValue(ref, 0);
             }
+            delta = h_OutputGPU[pos] - ref;
+            if(delta != 0) {
+                nerror++;
+                if(nerror <= 10) printf("%6d %7d %2d %10d it should be %10d (%d)\n",pos/(N/3),N/3,p3, h_OutputGPU[pos],ref,delta);
+            } else {
+                if(argc <= 5) printf("%6d %7d %2d %10d\n",pos/(N/3),N/3,p3, h_OutputGPU[pos]); 
+            }
+            sumDelta += abs(delta);
+            sumRef   += abs(ref);
+        }
+    }
     if(argc<=5 || nerror>0) printf("Error %d %d L1 norm: %E\n", nerror, sumDelta, L1norm = (double)sumDelta / (double) sumRef);
     if(argc<=5 || nerror>0) printf((nerror==0) ? "TEST PASSED\n" : "TEST FAILED\n");
 
     if(argc<=5) printf("Shutting down...\n");
-        cutilCheckError(cutDeleteTimer(hTimer));
-        free(h_OutputGPU);
-        cutilSafeCall( cudaFree(d_Output) );
+    cutilCheckError(cutDeleteTimer(hTimer));
+    free(h_OutputGPU);
+    cutilSafeCall( cudaFree(d_Output) );
 
     cudaThreadExit();
 

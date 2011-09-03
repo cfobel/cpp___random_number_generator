@@ -25,23 +25,19 @@
 // Park-Miller quasirandom number generation kernel
 ////////////////////////////////////////////////////////////////////////////////
 
-static __global__ void parkmillerKernel(
-    int *d_Output,
-    unsigned int seed,
-    int cycles,
-    unsigned int N
-){
+static __global__ void parkmillerKernel(int *d_Output, unsigned int seed,
+        int cycles, unsigned int N){
     unsigned int      tid = MUL(blockDim.x, blockIdx.x) + threadIdx.x;
     unsigned int  threadN = MUL(blockDim.x, gridDim.x);
-double const a    = 16807;      //ie 7**5
-double const m    = 2147483647; //ie 2**31-1
-double const reciprocal_m = 1.0/m;
+    double const a    = 16807;      //ie 7**5
+    double const m    = 2147483647; //ie 2**31-1
+    double const reciprocal_m = 1.0/m;
 
     for(unsigned int pos = tid; pos < N; pos += threadN){
         unsigned int result = 0;
         unsigned int data = seed + pos;
 
-	for (int i=1; i<=cycles; i++) {
+        for(int i = 0; i < cycles; i++) {
 
 // W. Langdon cs.ucl.ac.uk 5 May 1994
 
@@ -57,14 +53,14 @@ even with 64 bit Linux under CUDA 3.1
 	//data = result;
 	//return seed;
 #else
-	double temp = data * a;
-	result = (int) (temp - m * floor ( temp * reciprocal_m ));
-	data = result;
-	//cout<<"seed "<<seed<<endl;
-	//return seed;
+            double temp = data * a;
+            result = (int) (temp - m * floor ( temp * reciprocal_m ));
+            data = result;
+            //cout<<"seed "<<seed<<endl;
+            //return seed;
 #endif
 }//end mycode
-}//endfor
+        }//endfor
 
         //d_Output[MUL(threadIdx.y, N) + pos] = (float)(result + 1) * INT_SCALE;
         //d_Output[MUL(threadIdx.y, N) + pos] = result;
