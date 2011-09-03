@@ -32,3 +32,6 @@ program = env.Program('park-miller', Glob('*.cpp')
                             + kernels)
 
 ptx = env.Ptx('park-miller_device.cu')
+elf = env.Elf('park-miller_device.cu')
+cubin = env.Cubin(elf)
+txt = env.DeCubin(cubin)
