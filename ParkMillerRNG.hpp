@@ -67,9 +67,7 @@ public:
         vector<int> output(N);
         int output_size = output.size() * sizeof(int);
         if(data_size < output_size) {
-            if(NULL != d_Output) {
-                cudaFree(d_Output);
-            }
+            reset();
             cout << "Allocating " << output_size << " bytes..." << endl;
             cutilSafeCall(cudaMalloc((void **)&d_Output, output_size));
             cout << "  DONE" << endl;
@@ -84,10 +82,14 @@ public:
         return output;
     }
 
-    ~CUDAParkMillerRNG() {
+    void reset() {
         if(NULL != d_Output) {
             cudaFree(d_Output);
         }
+    }
+
+    ~CUDAParkMillerRNG() {
+        reset();
     }
 };
 

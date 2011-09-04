@@ -55,15 +55,6 @@ using namespace std;
 #include "ParkMillerRNG.hpp"
 
 
-
-////////////////////////////////////////////////////////////////////////////////
-// GPU code
-////////////////////////////////////////////////////////////////////////////////
-extern "C" void parkmiller_gpu(int *d_Output, unsigned int seed, int cycles, 
-			       unsigned int grid_size,unsigned int block_size, unsigned int N);
-
-
-
 int main(int argc, char **argv){
     int u, seed;
 	int cycles = 1000;
@@ -73,7 +64,6 @@ int main(int argc, char **argv){
     seed = 1;
 
 	if(argc<=5) printf("\nProgram to test Park-Miller Random number generator\n");
-    if(argc<=5) printf("Version $Revision: 1.14 $\n");
 	if(argc>1) cycles    = atoi(argv[1]);
 	if(argc>2) grid_size = atoi(argv[2]);
 	if(argc>3) block_size= atoi(argv[3]);
@@ -124,6 +114,7 @@ int main(int argc, char **argv){
         cudaThreadExit();
         return 0;
     }
+
     CUDAParkMillerRNG cuda_rng(0);
 	vector<int> h_OutputGPU = cuda_rng.get_values(cycles, grid_size, block_size, N);
 
@@ -153,5 +144,5 @@ int main(int argc, char **argv){
 
     cudaThreadExit();
 
-    exit(0); //cutilExit(argc,argv); gives "Error when pasing command line argument string" dunno why
+    return 0;
 }
