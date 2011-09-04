@@ -89,19 +89,7 @@ int main(int argc, char **argv){
 
     unsigned int hTimer;
 
-    if(sizeof(INT64) != 8){
-        printf("sizeof(INT64) != 8\n");
-        return 0;
-    }
-
-    /*
-    // use command-line specified CUDA device, otherwise use device with highest Gflops/s
-    if( cutCheckCmdLineFlag(argc, (const char**)argv, "device") )
-        cutilDeviceInit(argc, argv);
-    else
-    */
     cudaSetDevice( cutGetMaxGflopsDeviceId() );
-
     cutilCheckError(cutCreateTimer(&hTimer));
 
     int deviceIndex;
