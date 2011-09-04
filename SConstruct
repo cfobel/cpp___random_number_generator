@@ -27,7 +27,10 @@ cutil = [
 ]
 
 
-program = env.Program('park-miller', Glob('*.cpp') 
+generator = env.Program('park-miller_rng', ['park-miller_rng.cpp']
+                            + cutil
+                            + kernels)
+test = env.Program('park-miller', ['park-miller.cpp']
                             + cutil
                             + kernels)
 

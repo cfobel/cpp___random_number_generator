@@ -1,16 +1,12 @@
-/* WBL Crest 21 March 2009 $Revision: 1.5 $
- * Based on cuda/sdk/projects/quasirandomGenerator/quasirandom_common.h
- */
+#ifndef ___PARK_MILLER_RNG__HPP___
+#define ___PARK_MILLER_RNG__HPP___
+
 
 #include <vector>
 #include <iostream>
 #include <cutil_inline.h>
+#include "LehmerRNG.hpp"
 using namespace std;
-
-
-#ifndef PARKMILLER_COMMON_H
-#define PARKMILLER_COMMON_H
-
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -18,34 +14,19 @@ using namespace std;
 ////////////////////////////////////////////////////////////////////////////////
 typedef long long int INT64;
 
-//#define QRNG_DIMENSIONS 3 now is default value.....
-//#define QRNG_RESOLUTION 31
-//#define INT_SCALE (1.0f / (float)0x80000001U)
-//#define  PMc 1000
-//#define  PMc 1
 
-
-class ParkMillerRNG {
+class ParkMillerRNG : public LehmerRNG {
 protected:
-    unsigned int seed;
+    double get_modulus() {
+        //ie 2**31-1
+        return 2147483647;
+    }
+    double get_multiplier() {
+        //ie 7**5
+        return 16807;
+    }
 public:
-    ParkMillerRNG(unsigned int seed=0) : seed(seed) {}
-    void set_seed(unsigned int in_seed) {
-        seed = in_seed;
-    }
-    int get_value(unsigned int in_seed) {
-        set_seed(in_seed);
-        return get_value();
-    }
-    int get_value() {
-        //Generate single Park-Miller psuedo random number
-        double const a = 16807;      //ie 7**5
-        double const m = 2147483647; //ie 2**31-1
-
-        double temp = seed * a;
-        seed = (int) (temp - m * floor ( temp / m ));
-        return seed;
-    }
+    ParkMillerRNG(unsigned int seed=1) : LehmerRNG(seed) {}
 };
 
 
@@ -60,7 +41,7 @@ protected:
     int data_size;
     unsigned int seed;
 public:
-    CUDAParkMillerRNG(unsigned int seed=0) : seed(seed), data_size(0), d_Output(NULL) {}
+    CUDAParkMillerRNG(unsigned int seed=1) : seed(seed), data_size(0), d_Output(NULL) {}
 
     vector<int> get_values(int cycles, unsigned int grid_size,
                             unsigned int block_size, unsigned int N){
