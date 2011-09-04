@@ -1,6 +1,7 @@
 #ifndef ___LEHMER_RNG__HPP___
 #define ___LEHMER_RNG__HPP___
 
+#include <cmath>
 #include "RandomNumberGenerator.hpp"
 
 class LehmerRNG : public RandomNumberGenerator {
