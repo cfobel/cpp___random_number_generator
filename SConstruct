@@ -3,10 +3,14 @@ env = Environment()
 env.Tool('cuda')
 env.Append(LIBPATH=['/usr/lib/nvidia-current'])
 env.Append(LIBS=['cuda', 'cudart'])
+
 debug_flags = ['-g', '-O0']
-env.Append(NVCCFLAGS=['-arch', 'sm_13', '-pg'] + debug_flags)
-env.Append(CPPFLAGS=debug_flags)
-env.Append(LINKFLAGS=debug_flags)
+fast_flags = ['-O3']
+compile_flags = fast_flags
+
+env.Append(NVCCFLAGS=['-arch', 'sm_13', '-pg'] + compile_flags)
+env.Append(CPPFLAGS=compile_flags)
+env.Append(LINKFLAGS=compile_flags)
 
 kernels = [env.Object('park-miller_device.cu')]
 
