@@ -18,7 +18,7 @@ public:
         return get_value() % (max_value + 1);
     }
     double rand_double() {
-        return get_value() / get_max_value();
+        return get_value() / (double)get_max_value();
     }
     virtual int get_value() = 0;
 };
