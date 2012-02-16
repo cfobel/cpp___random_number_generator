@@ -10,6 +10,9 @@ public:
     void set_seed(unsigned int in_seed) {
         seed = in_seed;
     }
+    unsigned int get_seed() const {
+        return seed;
+    }
     int get_value(unsigned int in_seed) {
         set_seed(in_seed);
         return get_value();
